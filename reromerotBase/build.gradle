@@ -1,0 +1,84 @@
+plugins {
+    id "net.serenity-bdd.serenity-gradle-plugin" version "4.2.16"
+    id 'java'
+    id 'eclipse'
+    id 'idea'
+}
+
+defaultTasks 'clean', 'test', 'aggregate'
+group 'company.com.co'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+ext {
+    //serenityVersion = "4.2.16"
+    //serenityCucumberVersion = "4.2.16"
+    junitVersion = "5.8.2"
+    assertJVersion = "3.22.0"
+    slf4j = "2.0.0"
+    lombok = "1.18.24"
+    jUnitCoreVersion = "4.13.2"
+
+    serenityVersion = "4.0.48"
+    serenityCucumberVersion = "4.0.48"
+    }
+
+
+dependencies {
+    // 🔧 Dependencies used in src/main/java
+    implementation "net.serenity-bdd:serenity-core:${serenityVersion}"
+    implementation "net.serenity-bdd:serenity-screenplay:${serenityVersion}"
+    implementation "net.serenity-bdd:serenity-screenplay-webdriver:${serenityVersion}"
+    implementation "net.serenity-bdd:serenity-ensure:${serenityVersion}"
+    implementation "org.seleniumhq.selenium:selenium-java:4.11.0"
+
+    // 🧪 Dependencies used only in src/test/java
+    testImplementation "net.serenity-bdd:serenity-junit:${serenityVersion}"
+    testImplementation "net.serenity-bdd:serenity-cucumber:${serenityCucumberVersion}"
+    testImplementation "net.serenity-bdd:serenity-screenplay-rest:${serenityVersion}"
+    implementation "net.serenity-bdd:serenity-model:${serenityVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+    testImplementation "org.assertj:assertj-core:${assertJVersion}"
+    testImplementation "junit:junit:${jUnitCoreVersion}"
+
+    // 📦 Logging
+    implementation "org.slf4j:slf4j-api:2.0.7"
+    implementation "ch.qos.logback:logback-classic:1.5.13"
+
+    // 🧬 Lombok
+    compileOnly "org.projectlombok:lombok:${lombok}"
+    annotationProcessor "org.projectlombok:lombok:${lombok}"
+}
+
+test {
+    systemProperties System.getProperties()
+    systemProperty "file.encoding", "ISO-8859-1"
+    systemProperty "feature.file.encoding", "ISO-8859-1"
+    systemProperty "cucumber.options", System.properties.getProperty("cucumber.options")
+
+    testLogging.showStandardStreams = true
+    finalizedBy(aggregate)
+}
+
+serenity {
+    testRoot = "company.com.co"
+    requirementsDir = "src/test/resources/features"
+    reports = ["single-page-html"]
+}
+
+wrapper {
+    gradleVersion = "8.8"
+}

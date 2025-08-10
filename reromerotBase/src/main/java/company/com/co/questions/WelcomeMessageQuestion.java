@@ -1,44 +1,57 @@
 package company.com.co.questions;
 
-import company.com.co.utils.LoginPage;
+import company.com.co.resolvers.LoginPageResolver;
 import net.serenitybdd.core.Serenity;
-import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Question;
 import net.serenitybdd.screenplay.questions.Text;
+import net.serenitybdd.screenplay.targets.Target;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
 
 public class WelcomeMessageQuestion {
 
-    public static Question<String> title() {
-        return Text.of(LoginPage.WELCOME_TITLE).describedAs("the welcome title");
+    public static Question<String> title(String alias) {
+        return actor -> {
+            Target welcomeTarget = LoginPageResolver.getWelcomeTitle(alias);
+            welcomeTarget.resolveFor(actor).waitUntilVisible();
+            return Text.of(welcomeTarget).answeredBy(actor);
+        };
     }
 
-    public static Question<String> managerId() {
-        return Text.of(LoginPage.MANAGER_ID_LABEL).describedAs("the manager ID");
+
+    public static Question<String> managerId(String alias) {
+        return Text.of(LoginPageResolver.getManagerIdLabel(alias))
+                .describedAs("the manager ID for " + alias);
     }
 
-    // ✅ Corregido: captura el texto del Alert emergente
-    public static Question<String> errorMessage() {
-        return new Question<>() {
-            @Override
-            public String answeredBy(Actor actor) {
-                WebDriver driver = Serenity.getDriver();
-                try {
-                    Alert alert = driver.switchTo().alert();
-                    String alertText = alert.getText();
-                    alert.accept(); // opcional: cierra el alert
-                    return alertText;
-                } catch (NoAlertPresentException e) {
-                    return "No alert present";
+    public static Question<String> errorMessage(String alias) {
+        return actor -> {
+            WebDriver driver = Serenity.getDriver();
+
+            // 1. Intentar capturar alerta
+            try {
+                Alert alert = driver.switchTo().alert();
+                String alertText = alert.getText();
+                alert.accept(); // opcional
+                return alertText;
+            } catch (NoAlertPresentException e) {
+                // 2. Si no hay alerta, buscar Target definido por alias
+                Target errorTarget = LoginPageResolver.getErrorMessageTarget(alias);
+
+                if (errorTarget.resolveFor(actor).isVisible()) {
+                    return Text.of(errorTarget).answeredBy(actor);
+                } else {
+                    return "No error message found";
                 }
             }
-
-            @Override
-            public String toString() {
-                return "the login error alert message";
-            }
         };
+    }
+
+
+    public static Question<Boolean> isWelcomeVisible(String alias) {
+        return actor -> LoginPageResolver.getWelcomeTitle(alias)
+                .resolveFor(actor)
+                .isVisible();
     }
 }

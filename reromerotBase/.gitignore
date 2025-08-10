@@ -39,4 +39,45 @@ bin/
 .vscode/
 
 ### Mac OS ###
-.DS_Store
+.DS_Store  # macOS
+Thumbs.db  # Windows
+
+### Serenity BDD Reports ###
+target/site/serenity/
+target/serenity/
+target/*.png
+target/*.json
+target/*.html
+
+.serenity/
+.serenity-cache/
+serenity.properties.backup
+
+/serenity-report/
+*/serenity-summary.html
+*/serenity-report.html
+
+/target/
+/bin/
+/out/
+*.class
+*.log
+*.tmp
+
+### Logs ###
+logs/
+*.log
+
+# IntelliJ
+.idea/
+*.iml
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# VS Code
+.vscode/
+
+

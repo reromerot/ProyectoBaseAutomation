@@ -7,16 +7,17 @@ import org.junit.runner.RunWith;
 
 @RunWith(CucumberWithSerenity.class)
 @CucumberOptions(
-        features = "src/test/resources/features/guru_login.feature",
+        features = "src/test/resources/features/demoblaze_login.feature",
         glue = {
-                "company.com.co.stepdefinitions.guru",
+                "company.com.co.stepdefinitions.demoblaze",
                 "company.com.co.hooks"
 
         },
         snippets = CucumberOptions.SnippetType.CAMELCASE,
         plugin = "pretty"
+
 )
 
-public class GuruLogin {
+public class DemoblazeLogin {
 }
 
